@@ -1,10 +1,4 @@
-nbproject/private/
-build/
-dist/
-.DS_Store
-Thumbs.db
-*.class
-*.log
-*.iml
-.idea/
-*.swp
+* text=auto
+*.java text eol=lf
+*.form text eol=lf
+*.properties text eol=lf
