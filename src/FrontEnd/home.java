@@ -6,8 +6,11 @@ package FrontEnd;
 
 /**
  *
- * @author HP
+ * @author Zah
  */
+
+import FrontEnd.AddRecipe;
+
 public class home extends javax.swing.JFrame {
 
     /**
@@ -15,6 +18,7 @@ public class home extends javax.swing.JFrame {
      */
     public home() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -159,6 +163,9 @@ public class home extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        AddRecipe addRecipe = new AddRecipe();
+        addRecipe.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
