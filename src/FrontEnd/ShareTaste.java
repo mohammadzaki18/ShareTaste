@@ -1,20 +1,20 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java
  */
 package FrontEnd;
 
-/**
- *
- * @author Jackyyy
- */
-public class ShareTaste {
+import javax.swing.SwingUtilities;
 
-    /**
-     * @param args the command line arguments
-     */
+public class ShareTaste {
     public static void main(String[] args) {
-        // TODO code application logic here
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                register registerFrame = new register();
+                registerFrame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+                registerFrame.setLocationRelativeTo(null);
+                registerFrame.setVisible(true);
+            }
+        });
     }
-    
 }
