@@ -12,9 +12,9 @@ package FrontEnd;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.sql.*;
 
 public class AddRecipe extends JFrame {
-
     private JTextField tfJudul, tfFoto;
     private JTextArea taBahan, taLangkah;
     private JButton simpanButton, backButton, uploadButton;
@@ -45,7 +45,6 @@ public class AddRecipe extends JFrame {
         panel.add(titleLabel, gbc);
         gbc.gridwidth = 1;
 
-        // Judul
         JLabel lblJudul = new JLabel("Title:");
         lblJudul.setForeground(Color.WHITE);
         gbc.gridx = 0;
@@ -56,7 +55,6 @@ public class AddRecipe extends JFrame {
         gbc.gridx = 1;
         panel.add(tfJudul, gbc);
 
-        // Foto
         JLabel lblFoto = new JLabel("Photo:");
         lblFoto.setForeground(Color.WHITE);
         gbc.gridx = 0;
@@ -81,7 +79,6 @@ public class AddRecipe extends JFrame {
         gbc.gridy = 4;
         panel.add(previewLabel, gbc);
 
-        // Bahan
         JLabel lblBahan = new JLabel("Ingredients:");
         lblBahan.setForeground(Color.WHITE);
         gbc.gridx = 0;
@@ -89,7 +86,6 @@ public class AddRecipe extends JFrame {
         panel.add(lblBahan, gbc);
 
         taBahan = new JTextArea(3, 20);
-        taBahan.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         taBahan.setLineWrap(true);
         taBahan.setWrapStyleWord(true);
         JScrollPane bahanScroll = new JScrollPane(taBahan);
@@ -99,7 +95,6 @@ public class AddRecipe extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(bahanScroll, gbc);
 
-        // Langkah
         JLabel lblLangkah = new JLabel("Instructions:");
         lblLangkah.setForeground(Color.WHITE);
         gbc.gridx = 0;
@@ -108,7 +103,6 @@ public class AddRecipe extends JFrame {
         panel.add(lblLangkah, gbc);
 
         taLangkah = new JTextArea(3, 20);
-        taLangkah.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         taLangkah.setLineWrap(true);
         taLangkah.setWrapStyleWord(true);
         JScrollPane langkahScroll = new JScrollPane(taLangkah);
@@ -118,26 +112,19 @@ public class AddRecipe extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(langkahScroll, gbc);
 
-        // Tombol Simpan dan Kembali di 1 panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(0, 47, 91));
 
         simpanButton = new JButton("Save");
-        simpanButton.setPreferredSize(new Dimension(100, 30));
         simpanButton.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
-        simpanButton.setForeground(new Color(0, 51, 153));
         simpanButton.setBackground(Color.WHITE);
-        simpanButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Resep berhasil disimpan!");
-            new home().setVisible(true);
-            dispose();
-        });
+        simpanButton.setForeground(new Color(0, 51, 153));
+        simpanButton.addActionListener(e -> saveRecipe());
 
         backButton = new JButton("Back");
-        backButton.setPreferredSize(new Dimension(100, 30));
         backButton.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
-        backButton.setForeground(new Color(0, 51, 153));
         backButton.setBackground(Color.WHITE);
+        backButton.setForeground(new Color(0, 51, 153));
         backButton.addActionListener(e -> {
             new home().setVisible(true);
             dispose();
@@ -166,6 +153,39 @@ public class AddRecipe extends JFrame {
             ImageIcon icon = new ImageIcon(new ImageIcon(selectedImagePath)
                     .getImage().getScaledInstance(150, 100, Image.SCALE_SMOOTH));
             previewLabel.setIcon(icon);
+        }
+    }
+
+    private void saveRecipe() {
+        String title = tfJudul.getText().trim();
+        String photo = tfFoto.getText().trim();
+        String ingredients = taBahan.getText().trim();
+        String instructions = taLangkah.getText().trim();
+
+        if (title.isEmpty() || photo.isEmpty() || ingredients.isEmpty() || instructions.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+            return;
+        }
+
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+            String sql = "INSERT INTO resep (title, photo, ingredients, instructions, user_id) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, title);
+            pst.setString(2, photo);
+            pst.setString(3, ingredients);
+            pst.setString(4, instructions);
+            pst.setInt(5, 1);  // Sementara pakai user_id = 1 (nanti sesuaikan jika ada login session)
+
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Resep berhasil disimpan!");
+            pst.close();
+            conn.close();
+
+            new home().setVisible(true);
+            dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }
 

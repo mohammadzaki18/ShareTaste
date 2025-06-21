@@ -10,78 +10,138 @@ package FrontEnd;
  */
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.*;
 
 public class ViewRecipe extends JFrame {
-
-    private JTable table;
-    private JButton backButton;
+    private JPanel contentPanel;
 
     public ViewRecipe() {
-        setTitle("Lihat Resep");
+        setTitle("Daftar Resep");
         setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
+        loadData();
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(0, 47, 91));
+        contentPanel = new JPanel();
+        contentPanel.setBackground(new Color(0, 47, 91));
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        
+        JLabel myRecipeLabel = new JLabel("My Taste");
+        myRecipeLabel.setFont(new Font("Nirmala UI", Font.BOLD, 24));
+        myRecipeLabel.setForeground(Color.WHITE);
+        myRecipeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        contentPanel.add(myRecipeLabel);
+        
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        JPanel myRecipePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        myRecipePanel.setBackground(new Color(0, 47, 91));
+        contentPanel.add(myRecipePanel);
 
-        JLabel titleLabel = new JLabel("Daftar Resep", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Nirmala UI", Font.BOLD, 24));
-        titleLabel.setForeground(Color.WHITE);
-        panel.add(titleLabel, BorderLayout.NORTH);
+        JLabel otherRecipeLabel = new JLabel("Other Taste");
+        otherRecipeLabel.setFont(new Font("Nirmala UI", Font.BOLD, 24));
+        otherRecipeLabel.setForeground(Color.WHITE);
+        otherRecipeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        contentPanel.add(otherRecipeLabel);
+        
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        JPanel otherRecipePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        otherRecipePanel.setBackground(new Color(0, 47, 91));
+        contentPanel.add(otherRecipePanel);
+        
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        setContentPane(scrollPane);
 
-        // Tabel
-        table = new JTable();
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Title");
-        model.addColumn("Photo");
-        model.addColumn("Ingredients");
-        model.addColumn("Instructions");
+        // Simpan ke field supaya loadData bisa akses
+        this.myRecipePanel = myRecipePanel;
+        this.otherRecipePanel = otherRecipePanel;
+    }
 
-        // Contoh data (bisa diganti ambil dari database)
-        model.addRow(new Object[]{
-                "Nasi Goreng",
-                "C:/gambar/nasigoreng.jpg",
-                "Nasi, Telur, Bumbu, Kecap",
-                "Tumis bumbu, masukkan nasi, aduk rata"
+    private JPanel myRecipePanel, otherRecipePanel;
+
+    private void loadData() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM resep");
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String photo = rs.getString("photo");
+                String ingredients = rs.getString("ingredients");
+                String instructions = rs.getString("instructions");
+                int userId = rs.getInt("user_id");
+
+                JPanel recipeCard = createRecipeCard(title, photo, ingredients, instructions);
+                if (userId == 1) { // Ganti ke session id user jika ada
+                    myRecipePanel.add(recipeCard);
+                } else {
+                    otherRecipePanel.add(recipeCard);
+                }
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error load data: " + e.getMessage());
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    private JPanel createRecipeCard(String title, String photo, String ingredients, String instructions) {
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setPreferredSize(new Dimension(200, 250));
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+        // Gambar
+        JLabel imgLabel;
+        if (photo != null && !photo.isEmpty()) {
+            ImageIcon icon = new ImageIcon(new ImageIcon(photo).getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH));
+            imgLabel = new JLabel(icon);
+        } else {
+            imgLabel = new JLabel();
+            imgLabel.setPreferredSize(new Dimension(200, 100));
+            imgLabel.setBackground(Color.GRAY);
+            imgLabel.setOpaque(true);
+        }
+        card.add(imgLabel);
+
+        // Judul
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Nirmala UI", Font.BOLD, 14));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(titleLabel);
+
+        // Deskripsi langkah (potongan)
+        String preview = instructions.split("\\.")[0] + "...";
+        JLabel descLabel = new JLabel("1. " + preview);
+        descLabel.setFont(new Font("Nirmala UI", Font.PLAIN, 12));
+        descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(descLabel);
+
+        // Tombol lihat
+        JButton lihatButton = new JButton("Detail");
+        lihatButton.setFont(new Font("Nirmala UI", Font.PLAIN, 12));
+        lihatButton.setForeground(Color.WHITE);
+        lihatButton.setBackground(new Color(0, 47, 91));
+        lihatButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, instructions, "Detail " + title, JOptionPane.INFORMATION_MESSAGE);
         });
-        model.addRow(new Object[]{
-                "Es Teh",
-                "C:/gambar/esteh.jpg",
-                "Teh, Gula, Es Batu",
-                "Seduh teh, beri gula, tambahkan es"
-        });
+        card.add(lihatButton);
 
-        table.setModel(model);
-        table.setRowHeight(30);
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        // Tombol kembali
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(0, 47, 91));
-
-        backButton = new JButton("Back");
-        backButton.setPreferredSize(new Dimension(100, 30));
-        backButton.setFont(new Font("OCR A Extended", Font.PLAIN, 12));
-        backButton.setForeground(new Color(0, 51, 153));
-        backButton.setBackground(Color.WHITE);
-        backButton.addActionListener(e -> {
-            new home().setVisible(true);
-            dispose();
-        });
-
-        buttonPanel.add(backButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        setContentPane(panel);
+        return card;
     }
 
     public static void main(String[] args) {
