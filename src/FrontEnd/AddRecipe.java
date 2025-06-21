@@ -182,7 +182,7 @@ public class AddRecipe extends JFrame {
             pst.close();
             conn.close();
 
-            new home().setVisible(true);
+            new ViewRecipe().setVisible(true);
             dispose();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
