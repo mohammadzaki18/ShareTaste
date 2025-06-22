@@ -1,33 +1,29 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package FrontEnd;
-
-/**
- *
- * @author Zah
- */
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.sql.*;
 
-public class AddRecipe extends JFrame {
+/**
+ * Form untuk menambahkan resep baru.
+ * Mewarisi fitur-fitur umum dari BaseForm.
+ */
+public class AddRecipe extends BaseForm { //️ Pewarisan dari BaseForm
     private JTextField tfJudul, tfFoto;
     private JTextArea taBahan, taLangkah;
     private JButton simpanButton, backButton, uploadButton;
     private JLabel previewLabel;
     private String selectedImagePath;
-
+    
+    
+    /**
+     * Konstruktor utama AddRecipe.
+     * Memanggil konstruktor superclass (BaseForm) dan menyiapkan komponen UI.
+     */
     public AddRecipe() {
-        setTitle("Add Recipe");
-        setSize(900, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        super("Add Recipe"); // Memanggil konstruktor BaseForm dengan parameter judul form
         initComponents();
-        setResizable(false); 
     }
 
     private void initComponents() {
@@ -46,21 +42,19 @@ public class AddRecipe extends JFrame {
         panel.add(titleLabel, gbc);
         gbc.gridwidth = 1;
 
-        JLabel lblJudul = new JLabel("Title:");
-        lblJudul.setForeground(Color.WHITE);
+        // Judul
         gbc.gridx = 0;
         gbc.gridy = 1;
-        panel.add(lblJudul, gbc);
+        panel.add(createLabel("Title:"), gbc);
 
         tfJudul = new JTextField();
         gbc.gridx = 1;
         panel.add(tfJudul, gbc);
 
-        JLabel lblFoto = new JLabel("Photo:");
-        lblFoto.setForeground(Color.WHITE);
+        // Foto
         gbc.gridx = 0;
         gbc.gridy = 2;
-        panel.add(lblFoto, gbc);
+        panel.add(createLabel("Photo:"), gbc);
 
         tfFoto = new JTextField();
         tfFoto.setEditable(false);
@@ -80,39 +74,29 @@ public class AddRecipe extends JFrame {
         gbc.gridy = 4;
         panel.add(previewLabel, gbc);
 
-        JLabel lblBahan = new JLabel("Ingredients:");
-        lblBahan.setForeground(Color.WHITE);
+        // Bahan
         gbc.gridx = 0;
         gbc.gridy = 5;
-        panel.add(lblBahan, gbc);
+        panel.add(createLabel("Ingredients:"), gbc);
 
         taBahan = new JTextArea(3, 20);
-        taBahan.setLineWrap(true);
-        taBahan.setWrapStyleWord(true);
-        JScrollPane bahanScroll = new JScrollPane(taBahan);
-        bahanScroll.setPreferredSize(new Dimension(250, 70));
         gbc.gridx = 1;
-        gbc.gridy = 5;
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(bahanScroll, gbc);
+        panel.add(createTextAreaScroll(taBahan), gbc);
 
-        JLabel lblLangkah = new JLabel("Instructions:");
-        lblLangkah.setForeground(Color.WHITE);
+        // Langkah
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(lblLangkah, gbc);
+        panel.add(createLabel("Instructions:"), gbc);
 
         taLangkah = new JTextArea(3, 20);
-        taLangkah.setLineWrap(true);
-        taLangkah.setWrapStyleWord(true);
-        JScrollPane langkahScroll = new JScrollPane(taLangkah);
-        langkahScroll.setPreferredSize(new Dimension(250, 70));
         gbc.gridx = 1;
         gbc.gridy = 6;
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(langkahScroll, gbc);
+        panel.add(createTextAreaScroll(taLangkah), gbc);
 
+        // Tombol
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(0, 47, 91));
 
@@ -143,6 +127,7 @@ public class AddRecipe extends JFrame {
         setContentPane(panel);
     }
 
+    // Fungsi memilih gambar
     private void chooseImage() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
@@ -157,6 +142,7 @@ public class AddRecipe extends JFrame {
         }
     }
 
+    // Simpan data ke database
     private void saveRecipe() {
         String title = tfJudul.getText().trim();
         String photo = tfFoto.getText().trim();
@@ -164,11 +150,9 @@ public class AddRecipe extends JFrame {
         String instructions = taLangkah.getText().trim();
 
         if (title.isEmpty() || photo.isEmpty() || ingredients.isEmpty() || instructions.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
+            showError("Semua field wajib diisi!");
             return;
         }
-        
-        System.out.println("[DEBUG] Session.getUserId() = " + Session.getUserId());
 
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
@@ -179,16 +163,16 @@ public class AddRecipe extends JFrame {
             pst.setString(3, ingredients);
             pst.setString(4, instructions);
             pst.setInt(5, Session.getUserId());
-            
+
             pst.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Resep berhasil disimpan!");
+            showSuccess("Resep berhasil disimpan!");
             pst.close();
             conn.close();
 
             new ViewRecipe().setVisible(true);
             dispose();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            showError("Error: " + e.getMessage());
         }
     }
 

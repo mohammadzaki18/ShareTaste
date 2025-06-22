@@ -16,14 +16,45 @@ import javax.swing.JOptionPane;
  */
 public class login extends javax.swing.JFrame {
 
-    /** Creates new form login */
+    /** Konstruktor utama (default) */
     public login() {
         initComponents();
+        setupUI();
+    }
+
+    /** 
+     * Constructor overload: preset username otomatis dari parameter.
+     * Berguna untuk diarahkan setelah register atau dari halaman lain.
+     */
+    public login(String presetUsername) {
+        this(); // panggil constructor utama
+        uname.setText(presetUsername); // isi otomatis username
+        uname.setEditable(false); // opsional: tidak bisa diedit
+    }
+
+    /** 
+     * Overload lain: preset username dan role
+     */
+    public login(String presetUsername, String role) {
+        this(presetUsername); // gunakan constructor sebelumnya
+        System.out.println("Login sebagai role: " + role);
+    }
+
+    /** 
+     * Method override: mengubah hasil toString() menjadi info login
+     */
+    @Override
+    public String toString() {
+        return "Halaman Login - Username: " + uname.getText();
+    }
+
+    /** Inisialisasi komponen + tambahan pengaturan UI */
+    private void setupUI() {
         setLocationRelativeTo(null);
         setResizable(false);
-        lblDaftarLink.setFont(new java.awt.Font("Nirmala UI", java.awt.Font.PLAIN,12));
+        lblDaftarLink.setFont(new java.awt.Font("Nirmala UI", java.awt.Font.PLAIN, 12));
         lblDaftarLink.setForeground(new java.awt.Color(204, 204, 204));
-        lblDaftarLink.setText("<html>Belum punya akun? <font color-'white'><u>Daftar di sini</u></font></html>");
+        lblDaftarLink.setText("<html>Belum punya akun? <font color='white'><u>Daftar di sini</u></font></html>");
         lblDaftarLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lblDaftarLink.setBackground(new java.awt.Color(255, 255, 255));
         lblDaftarLink.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -31,17 +62,20 @@ public class login extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 new register().setVisible(true);
                 dispose();
-        }
+            }
+
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                lblDaftarLink.setText("<html>Belum punya akun? <font color-'red'><u>Daftar di sini</u></font></html>");
-        }
+                lblDaftarLink.setText("<html>Belum punya akun? <font color='blue'><u>Daftar di sini</u></font></html>");
+            }
+
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                lblDaftarLink.setText("<html>Belum punya akun? <font color-'white'><u>Daftar di sini</u></font></html>");
-        }
-});
-}
+                lblDaftarLink.setText("<html>Belum punya akun? <font color='white'><u>Daftar di sini</u></font></html>");
+            }
+        });
+    }
+
 
 
     /** This method is called from within the constructor to
@@ -145,6 +179,7 @@ public class login extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Share Taste");
 
+        lblDaftarLink.setForeground(new java.awt.Color(255, 255, 255));
         lblDaftarLink.setText("Belum Punya Akun? Daftar di sini");
         lblDaftarLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -251,6 +286,7 @@ public class login extends javax.swing.JFrame {
 
     private void lblDaftarLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDaftarLinkMouseClicked
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_lblDaftarLinkMouseClicked
 
     /**

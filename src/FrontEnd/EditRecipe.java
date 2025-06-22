@@ -186,8 +186,10 @@ public class EditRecipe extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Nirmala UI", 1, 24)); // NOI18N
         jLabel1.setText("Edit Resep");
 
+        judul.setForeground(new java.awt.Color(0, 51, 153));
         judul.setText("Judul Resep");
 
+        jLabel3.setForeground(new java.awt.Color(0, 51, 153));
         jLabel3.setText("Foto Resep");
 
         txtFotoResep.setEditable(false);
@@ -203,6 +205,7 @@ public class EditRecipe extends javax.swing.JFrame {
             }
         });
 
+        bahan.setForeground(new java.awt.Color(0, 51, 153));
         bahan.setText("Bahan-bahan");
 
         btnChooseFile.setText("Choose File");
@@ -214,6 +217,7 @@ public class EditRecipe extends javax.swing.JFrame {
 
         lblGambarResep.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        langkah.setForeground(new java.awt.Color(0, 51, 153));
         langkah.setText("Langkah-langkah");
 
         txtAreaLangkah.setColumns(20);
@@ -225,6 +229,7 @@ public class EditRecipe extends javax.swing.JFrame {
         JScrollPane2.setViewportView(txtAreaBahan);
 
         btnSimpan.setBackground(new java.awt.Color(51, 204, 0));
+        btnSimpan.setForeground(new java.awt.Color(255, 255, 255));
         btnSimpan.setText("Simpan Perubahan");
         btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -242,6 +247,7 @@ public class EditRecipe extends javax.swing.JFrame {
         });
 
         btnDelete.setBackground(new java.awt.Color(255, 102, 102));
+        btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
