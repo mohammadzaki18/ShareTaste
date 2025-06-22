@@ -21,6 +21,7 @@ public class EditRecipe extends javax.swing.JFrame {
     public EditRecipe(int recipeId) {
         initComponents();
         setLocationRelativeTo(null);
+        setResizable(false); 
         this.recipeId = recipeId;
         loadDataFromDatabase();
     }

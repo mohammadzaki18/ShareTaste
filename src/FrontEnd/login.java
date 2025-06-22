@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author Jackyyy
@@ -19,7 +20,29 @@ public class login extends javax.swing.JFrame {
     public login() {
         initComponents();
         setLocationRelativeTo(null);
-    }
+        setResizable(false);
+        lblDaftarLink.setFont(new java.awt.Font("Nirmala UI", java.awt.Font.PLAIN,12));
+        lblDaftarLink.setForeground(new java.awt.Color(204, 204, 204));
+        lblDaftarLink.setText("<html>Belum punya akun? <font color-'white'><u>Daftar di sini</u></font></html>");
+        lblDaftarLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblDaftarLink.setBackground(new java.awt.Color(255, 255, 255));
+        lblDaftarLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                new register().setVisible(true);
+                dispose();
+        }
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lblDaftarLink.setText("<html>Belum punya akun? <font color-'red'><u>Daftar di sini</u></font></html>");
+        }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lblDaftarLink.setText("<html>Belum punya akun? <font color-'white'><u>Daftar di sini</u></font></html>");
+        }
+});
+}
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -39,6 +62,7 @@ public class login extends javax.swing.JFrame {
         password = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        lblDaftarLink = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -121,6 +145,13 @@ public class login extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Share Taste");
 
+        lblDaftarLink.setText("Belum Punya Akun? Daftar di sini");
+        lblDaftarLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblDaftarLinkMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -132,11 +163,13 @@ public class login extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(199, 199, 199))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(348, 348, 348))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addGap(321, 321, 321))))
+                        .addGap(321, 321, 321))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                            .addComponent(lblDaftarLink, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(348, 348, 348))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -147,7 +180,9 @@ public class login extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addGap(111, 111, 111))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblDaftarLink)
+                .addGap(89, 89, 89))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -164,6 +199,7 @@ public class login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void unameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_unameActionPerformed
@@ -206,6 +242,10 @@ public class login extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
     }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void lblDaftarLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDaftarLinkMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblDaftarLinkMouseClicked
 
     /**
      * @param args the command line arguments
@@ -250,6 +290,7 @@ public class login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lblDaftarLink;
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField uname;
     // End of variables declaration//GEN-END:variables

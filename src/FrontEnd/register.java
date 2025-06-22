@@ -12,6 +12,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.awt.Font;
+import java.awt.Cursor;
+
 
 /**
  *
@@ -43,10 +46,32 @@ public class register extends javax.swing.JFrame {
     
     public register() {
         initComponents();
-        jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         koneksi();
         setLocationRelativeTo(null);
-    }
+        setResizable(false); 
+        lblLoginLink.setFont(new java.awt.Font("Nirmala UI", java.awt.Font.PLAIN,12));
+        lblLoginLink.setForeground(new java.awt.Color(204, 204, 204));
+        lblLoginLink.setText("<html>Sudah punya akun? <font color-'white'><u>Login di sini</u></font></html>");
+        lblLoginLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblLoginLink.setBackground(new java.awt.Color(255, 255, 255));
+        lblLoginLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                new FrontEnd.login().setVisible(true);
+                dispose();
+        }
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lblLoginLink.setText("<html>Sudah punya akun? <font color-'red'><u>Login di sini</u></font></html>");
+        }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lblLoginLink.setText("<html>Sudah punya akun? <font color-'white'><u>Login di sini</u></font></html>");
+        }
+});
+            
+        jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -68,6 +93,7 @@ public class register extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        lblLoginLink = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -165,6 +191,15 @@ public class register extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Share Taste");
 
+        lblLoginLink.setBackground(new java.awt.Color(255, 255, 255));
+        lblLoginLink.setText("Sudah Punya Akun? Login di sini");
+        lblLoginLink.setPreferredSize(new java.awt.Dimension(160, 16));
+        lblLoginLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblLoginLinkMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -173,25 +208,31 @@ public class register extends javax.swing.JFrame {
                 .addContainerGap(226, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(346, 346, 346))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(194, 194, 194))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addGap(317, 317, 317))))
+                        .addGap(317, 317, 317))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(lblLoginLink, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(346, 346, 346))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(76, Short.MAX_VALUE)
+                .addContainerGap(101, Short.MAX_VALUE)
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addGap(114, 114, 114))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblLoginLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(67, 67, 67))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -252,6 +293,10 @@ public class register extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordActionPerformed
 
+    private void lblLoginLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblLoginLinkMouseClicked
+
+    }//GEN-LAST:event_lblLoginLinkMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -296,6 +341,7 @@ public class register extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lblLoginLink;
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField pname;
     private javax.swing.JTextField uname;

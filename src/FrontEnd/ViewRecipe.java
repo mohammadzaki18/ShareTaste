@@ -15,12 +15,14 @@ public class ViewRecipe extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
         loadData();
+        setResizable(false); 
     }
 
     private void initComponents() {
         contentPanel = new JPanel();
         contentPanel.setBackground(new Color(0, 47, 91));
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        
 
         // Tombol Home
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));

@@ -27,6 +27,7 @@ public class AddRecipe extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
+        setResizable(false); 
     }
 
     private void initComponents() {
