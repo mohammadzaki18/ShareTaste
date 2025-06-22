@@ -1,10 +1,17 @@
 package FrontEnd;
 
+import Interfaces.RecipeDisplayable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
-public class ViewRecipe extends JFrame {
+/**
+ * Kelas ViewRecipe menampilkan daftar resep yang dibuat oleh pengguna (My Taste)
+ * dan pengguna lain (Other Taste). Mengimplementasikan interface RecipeDisplayable.
+ */
+public class ViewRecipe extends JFrame implements RecipeDisplayable {
+
     private JPanel contentPanel, myRecipePanel, otherRecipePanel;
     private final int currentUserId = Session.getUserId();
 
@@ -14,22 +21,21 @@ public class ViewRecipe extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
-        loadData();
-        setResizable(false); 
+        loadData(); // Panggil metode dari interface
+        setResizable(false);
     }
 
     private void initComponents() {
         contentPanel = new JPanel();
         contentPanel.setBackground(new Color(0, 47, 91));
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        
 
-        // Tombol Home
+        // Panel Header
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         headerPanel.setBackground(new Color(0, 47, 91));
         JButton homeButton = new JButton("Home");
         homeButton.setFont(new Font("Nirmala UI", Font.PLAIN, 14));
-        homeButton.setBackground(new Color(255, 255, 255));
+        homeButton.setBackground(Color.WHITE);
         homeButton.setForeground(new Color(0, 47, 91));
         homeButton.addActionListener(e -> {
             new home().setVisible(true);
@@ -69,64 +75,77 @@ public class ViewRecipe extends JFrame {
         setContentPane(scrollPane);
     }
 
-    private void loadData() {
+    /**
+     * Memuat seluruh data resep (milik user & orang lain)
+     */
+    @Override
+    public void loadData() {
         loadMyRecipes();
         loadOtherRecipes();
     }
 
-    private void loadMyRecipes() {
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM resep WHERE user_id = ?");
+    /**
+     * Memuat resep yang dibuat oleh user yang sedang login
+     */
+    @Override
+    public void loadMyRecipes() {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM resep WHERE user_id = ?")) {
+
             ps.setInt(1, currentUserId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("title");
-                String photo = rs.getString("photo");
-                String ingredients = rs.getString("ingredients");
-                String instructions = rs.getString("instructions");
-                JPanel card = createRecipeCard(id, title, photo, ingredients, instructions, currentUserId, Session.getFullName());
+                JPanel card = createRecipeCard(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("photo"),
+                    rs.getString("ingredients"),
+                    rs.getString("instructions"),
+                    currentUserId,
+                    Session.getFullName()
+                );
                 myRecipePanel.add(card);
             }
 
-            rs.close();
-            ps.close();
-            conn.close();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error load my data: " + e.getMessage());
         }
     }
 
-    private void loadOtherRecipes() {
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM resep WHERE user_id <> ?");
+    /**
+     * Memuat resep yang dibuat oleh user lain
+     */
+    @Override
+    public void loadOtherRecipes() {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM resep WHERE user_id <> ?")) {
+
             ps.setInt(1, currentUserId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("title");
-                String photo = rs.getString("photo");
-                String ingredients = rs.getString("ingredients");
-                String instructions = rs.getString("instructions");
                 int userId = rs.getInt("user_id");
-                String username = getUserFullName(userId, conn);
-                JPanel card = createRecipeCard(id, title, photo, ingredients, instructions, userId, username);
+                JPanel card = createRecipeCard(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("photo"),
+                    rs.getString("ingredients"),
+                    rs.getString("instructions"),
+                    userId,
+                    getUserFullName(userId, conn)
+                );
                 otherRecipePanel.add(card);
             }
 
-            rs.close();
-            ps.close();
-            conn.close();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error load other data: " + e.getMessage());
         }
     }
 
-
+    /**
+     * Membuat panel kartu resep
+     */
     private JPanel createRecipeCard(int id, String title, String photo, String ingredients, String instructions, int userId, String username) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -175,20 +194,20 @@ public class ViewRecipe extends JFrame {
             editButton.setForeground(Color.WHITE);
             editButton.setBackground(new Color(255, 153, 51));
             editButton.addActionListener(e -> {
-                EditRecipe editFrame = new EditRecipe(id);
-                editFrame.setVisible(true);
+                new EditRecipe(id).setVisible(true);
                 this.dispose();
             });
             card.add(editButton);
         }
 
-
         return card;
     }
 
+    /**
+     * Mengambil nama lengkap user berdasarkan user_id
+     */
     private String getUserFullName(int userId, Connection conn) {
-        try {
-            PreparedStatement ps = conn.prepareStatement("SELECT fullname FROM user WHERE id = ?");
+        try (PreparedStatement ps = conn.prepareStatement("SELECT fullname FROM user WHERE id = ?")) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
