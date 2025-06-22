@@ -33,7 +33,7 @@ public class AddRecipe extends BaseForm { //️ Pewarisan dari BaseForm
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titleLabel = new JLabel("Add Your New Taste");
+        JLabel titleLabel = new JLabel("Share Your New Taste");
         titleLabel.setFont(new Font("Nirmala UI", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         gbc.gridx = 0;
