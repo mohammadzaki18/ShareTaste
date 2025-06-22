@@ -59,7 +59,7 @@ public class home extends javax.swing.JFrame {
         jLabel2.setText("Temukan dan bagikan resep makanan dan minuman favoritmu!");
 
         jButton2.setBackground(new java.awt.Color(255, 153, 0));
-        jButton2.setFont(new java.awt.Font("Exotc350 DmBd BT", 0, 36)); // NOI18N
+        jButton2.setFont(new java.awt.Font("OCR A Extended", 0, 36)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Share It!");
         jButton2.addActionListener(new java.awt.event.ActionListener() {

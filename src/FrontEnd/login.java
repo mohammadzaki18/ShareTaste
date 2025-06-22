@@ -225,8 +225,14 @@ public class login extends javax.swing.JFrame {
 
         ResultSet rs = pst.executeQuery();
         if (rs.next()) {
+            int id = rs.getInt("id");
+            System.out.println("Login id with: " + id);
+            Session.setUserId(id);
+            Session.setUserId(rs.getInt("id"));
+            Session.setFullName(rs.getString("fullname"));
+            Session.setUsername(rs.getString("username"));
+            
             JOptionPane.showMessageDialog(this, "Login berhasil!");
-
             // Buka halaman home
             new home().setVisible(true);  // Ubah ke nama class sebenarnya jika beda
             this.dispose(); // Tutup halaman login

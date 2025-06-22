@@ -6,7 +6,7 @@ package FrontEnd;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+//import java.awt.event.ActionEvent;
 import java.io.File;
 import java.sql.*;
 
@@ -27,6 +27,12 @@ public class EditRecipe extends javax.swing.JFrame {
     }
 
     private void loadDataFromDatabase() {
+        if (!isUserOwner(recipeId)) {
+            JOptionPane.showMessageDialog(this, "Anda tidak diizinkan mengedit resep ini!");
+            dispose();
+            return;
+        }
+        
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
             String query = "SELECT * FROM resep WHERE id = ?";
@@ -53,7 +59,94 @@ public class EditRecipe extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Gagal memuat data resep: " + e.getMessage());
         }
     }
+    
+    private boolean isUserOwner(int recipeId) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+            PreparedStatement ps = conn.prepareStatement("SELECT user_id FROM resep WHERE id = ?");
+            ps.setInt(1, recipeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int ownerId = rs.getInt("user_id");
+                System.out.println("debug owner = " + ownerId + "SessionId " + Session.getUserId());
+                conn.close();
+                return ownerId == Session.getUserId();
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    private void doSimpan() {
+        if (!isUserOwner(recipeId)) {
+            JOptionPane.showMessageDialog(this, "Anda tidak diizinkan mengedit resep ini!");
+            return;
+        }
 
+        String judul = txtJudulResep.getText().trim();
+        String bahan = txtAreaBahan.getText().trim();
+        String langkah = txtAreaLangkah.getText().trim();
+
+        if (judul.isEmpty() || bahan.isEmpty() || langkah.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+            String query = "UPDATE resep SET title=?, ingredients=?, instructions=?, photo=? WHERE id=?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, judul);
+            ps.setString(2, bahan);
+            ps.setString(3, langkah);
+            ps.setString(4, selectedImagePath);
+            ps.setInt(5, recipeId);
+
+            int rowsAffected = ps.executeUpdate();
+            conn.close();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Resep berhasil diperbarui!");
+                this.dispose();
+                new ViewRecipe().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Resep gagal diperbarui.", "Gagal", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error saat update data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void doDelete() {
+        if (!isUserOwner(recipeId)) {
+            JOptionPane.showMessageDialog(this, "Anda tidak diizinkan menghapus resep ini!");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah kamu yakin ingin menghapus resep ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+                String query = "DELETE FROM resep WHERE id = ?";
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setInt(1, recipeId);
+                int rowsAffected = ps.executeUpdate();
+                conn.close();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Resep berhasil dihapus.");
+                    this.dispose();
+                    new ViewRecipe().setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal menghapus resep.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error saat menghapus: " + e.getMessage());
+            }
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -277,7 +370,6 @@ public class EditRecipe extends javax.swing.JFrame {
             
             try {
                 ImageIcon imageIcon = new ImageIcon(selectedImagePath);
-                // Sesuaikan ukuran gambar agar pas di JLabel (opsional, bisa disesuaikan lebih lanjut)
                 if (imageIcon.getIconWidth() > lblGambarResep.getWidth() || imageIcon.getIconHeight() > lblGambarResep.getHeight()) {
                     imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(
                             lblGambarResep.getWidth(), lblGambarResep.getHeight(), java.awt.Image.SCALE_SMOOTH));
@@ -290,73 +382,19 @@ public class EditRecipe extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChooseFileActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
-        String judul = txtJudulResep.getText().trim();
-    String bahan = txtAreaBahan.getText().trim();
-    String langkah = txtAreaLangkah.getText().trim();
-
-    if (judul.isEmpty() || bahan.isEmpty() || langkah.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    try {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
-
-        String query = "UPDATE resep SET title=?, ingredients=?, instructions=?, photo=? WHERE id=?";
-        PreparedStatement ps = conn.prepareStatement(query);
-        ps.setString(1, judul);
-        ps.setString(2, bahan);
-        ps.setString(3, langkah);
-        ps.setString(4, selectedImagePath); // Simpan path-nya
-        ps.setInt(5, recipeId); // Gunakan variabel id resep
-
-        int rowsAffected = ps.executeUpdate();
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(this, "Resep berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-            this.dispose(); // Tutup EditRecipe
-            new ViewRecipe().setVisible(true); // Buka kembali ViewRecipe
-        } else {
-            JOptionPane.showMessageDialog(this, "Resep gagal diperbarui.", "Gagal", JOptionPane.ERROR_MESSAGE);
-        }
-
-        conn.close();
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error saat update data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }         
+        // TODO add your handling code here:
+        doSimpan();        
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
+        // TODO add your handling code here:
         this.dispose();
         new ViewRecipe().setVisible(true);
     }//GEN-LAST:event_btnBatalActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(this, 
-        "Apakah kamu yakin ingin menghapus resep ini?", 
-        "Konfirmasi", JOptionPane.YES_NO_OPTION);
-    
-    if (confirm == JOptionPane.YES_OPTION) {
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
-            String query = "DELETE FROM resep WHERE id = ?";
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setInt(1, recipeId);
-            int rowsAffected = ps.executeUpdate();
-
-            conn.close();
-
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(this, "Resep berhasil dihapus.");
-                this.dispose();
-                new ViewRecipe().setVisible(true); // kembali ke daftar resep
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menghapus resep.");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saat menghapus: " + e.getMessage());
-        }
-    }
+        doDelete();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**

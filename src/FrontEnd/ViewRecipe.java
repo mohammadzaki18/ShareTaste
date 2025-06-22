@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class ViewRecipe extends JFrame {
     private JPanel contentPanel, myRecipePanel, otherRecipePanel;
-    private final int currentUserId = 1; // Ganti jika menggunakan session login
+    private final int currentUserId = Session.getUserId();
 
     public ViewRecipe() {
         setTitle("Daftar Resep");
@@ -70,37 +70,62 @@ public class ViewRecipe extends JFrame {
     }
 
     private void loadData() {
+        loadMyRecipes();
+        loadOtherRecipes();
+    }
+
+    private void loadMyRecipes() {
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM resep");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM resep WHERE user_id = ?");
+            ps.setInt(1, currentUserId);
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                int recipeId = rs.getInt("id");
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String photo = rs.getString("photo");
+                String ingredients = rs.getString("ingredients");
+                String instructions = rs.getString("instructions");
+                JPanel card = createRecipeCard(id, title, photo, ingredients, instructions, currentUserId, Session.getFullName());
+                myRecipePanel.add(card);
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error load my data: " + e.getMessage());
+        }
+    }
+
+    private void loadOtherRecipes() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM resep WHERE user_id <> ?");
+            ps.setInt(1, currentUserId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
                 String title = rs.getString("title");
                 String photo = rs.getString("photo");
                 String ingredients = rs.getString("ingredients");
                 String instructions = rs.getString("instructions");
                 int userId = rs.getInt("user_id");
-
                 String username = getUserFullName(userId, conn);
-                JPanel recipeCard = createRecipeCard(recipeId, title, photo, ingredients, instructions, userId, username);
-
-                if (userId == currentUserId) {
-                    myRecipePanel.add(recipeCard);
-                } else {
-                    otherRecipePanel.add(recipeCard);
-                }
+                JPanel card = createRecipeCard(id, title, photo, ingredients, instructions, userId, username);
+                otherRecipePanel.add(card);
             }
 
+            rs.close();
+            ps.close();
             conn.close();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error load data: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error load other data: " + e.getMessage());
         }
-
-        revalidate();
-        repaint();
     }
+
 
     private JPanel createRecipeCard(int id, String title, String photo, String ingredients, String instructions, int userId, String username) {
         JPanel card = new JPanel();
@@ -156,6 +181,7 @@ public class ViewRecipe extends JFrame {
             });
             card.add(editButton);
         }
+
 
         return card;
     }

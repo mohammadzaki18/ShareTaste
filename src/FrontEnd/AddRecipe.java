@@ -167,6 +167,8 @@ public class AddRecipe extends JFrame {
             JOptionPane.showMessageDialog(this, "Semua field wajib diisi!");
             return;
         }
+        
+        System.out.println("[DEBUG] Session.getUserId() = " + Session.getUserId());
 
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sharetaste", "root", "");
@@ -176,8 +178,8 @@ public class AddRecipe extends JFrame {
             pst.setString(2, photo);
             pst.setString(3, ingredients);
             pst.setString(4, instructions);
-            pst.setInt(5, 1);  // Sementara pakai user_id = 1 (nanti sesuaikan jika ada login session)
-
+            pst.setInt(5, Session.getUserId());
+            
             pst.executeUpdate();
             JOptionPane.showMessageDialog(this, "Resep berhasil disimpan!");
             pst.close();
